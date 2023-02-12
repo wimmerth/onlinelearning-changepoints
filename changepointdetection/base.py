@@ -5,14 +5,18 @@ from . import base
 
 
 class ChangePointDetector(base.Base):
-    """A change point detector."""
+    """
+    An abstract class for change point detection methods. Use this class to be able to run test using the tcpd benchmark.
+    """
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self._change_point_detected = False
         self._change_point_score = 0.0
 
     def _reset(self):
-        """Reset the change detector."""
+        """
+        Reset the change detector.
+        """
         self._change_point_detected = False
         self._change_point_score = 0.0
 
@@ -31,16 +35,11 @@ class ChangePointDetector(base.Base):
         return self._change_point_score
 
     @abc.abstractmethod
-    def update(self, x: numbers.Number) -> "ChangePointDetector":
-        """Update the change point detector with a single data point.
+    def update(self, x, t) -> "ChangePointDetector":
+        """
+        Update the change point detector with a single data point.
 
-        Parameters
-        ----------
-        x
-            Input value.
-
-        Returns
-        -------
-        self
-
+        :param x: Input data point.
+        :param t: Time step. STARTING FROM 1.
+        :return: self
         """

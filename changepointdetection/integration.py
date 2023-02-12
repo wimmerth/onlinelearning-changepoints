@@ -16,6 +16,10 @@ from multiprocessing import Process, Manager
 
 TIMEOUT = 60 * 30  # 30 minutes
 
+METHODS = {
+    # TODO: add methods (is this the best way to access the different modules?)
+}
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Wrapper for any change point detector implemented with river.")
@@ -24,6 +28,8 @@ def parse_args():
     )
     parser.add_argument("-o", "--output", help="path to the output file")
     parser.add_argument("--use-timeout", action="store_true")
+
+    parser.add_argument("-m", "--method", help="change point detection method (class name)", required=True)
 
     # TODO: How do we handle the different parameters for different algorithms? How do we parse these arbitrary parameters in a kwargs dict?
 
@@ -42,6 +48,24 @@ def parse_args():
     return parser.parse_args()
 
 
+def run_method(mat, parameters, **kwargs):
+    """
+    Run the change point detector.
+
+    :param mat: A T x d matrix of observations.
+    :param parameters: A dictionary of parameters for the change point detector.
+    :return: A change point detector object.
+    """
+    model = METHODS[parameters["method"]](parameters, **kwargs)
+    change_points = []
+    for t in range(mat.shape[0]):
+        model.update(mat[t, :], t + 1)
+        if model.change_point_detected():
+            # make sure locations are 0-based and integer!
+            change_points.append(t)
+    return model, change_points
+
+
 def wrap_with_timeout(args, kwargs, limit):
     """
     Run a change point detector with a timeout.
@@ -56,8 +80,9 @@ def wrap_with_timeout(args, kwargs, limit):
         """
         Wrapper function to run the change point detector in a separate process.
         """
-        detector = run_method(*args, **kwargs)  # TODO
+        detector, change_points = run_method(*args, **kwargs)  # TODO
         return_dict["detector"] = detector
+        return_dict["change_points"] = change_points
 
     manager = Manager()
     return_dict = manager.dict()
@@ -69,7 +94,7 @@ def wrap_with_timeout(args, kwargs, limit):
         p.terminate()
         return None, "timeout"
     if "detector" in return_dict:
-        return return_dict["detector"], "success"
+        return (return_dict["detector"], return_dict["change_points"]), "success"
     return None, "fail"
 
 
@@ -81,7 +106,7 @@ def main():
 
     # set algorithm parameters that are not varied in the grid search
     defaults = {
-        # TODO: add default parameters
+        # TODO: add default parameters?
     }
 
     # combine command line arguments with defaults
@@ -95,9 +120,9 @@ def main():
     # run the algorithm in a try/except
     try:
         if args.use_timeout:
-            detector, status = wrap_with_timeout((mat, parameters), kwargs, TIMEOUT)
+            (detector, change_points), status = wrap_with_timeout((mat, parameters), kwargs, TIMEOUT)
         else:
-            detector = run_method(mat, parameters, **kwargs)  # TODO
+            detector, change_points = run_method(mat, parameters, **kwargs)  # TODO
             status = 'success'
     except Exception as err:
         error = repr(err)
@@ -111,11 +136,7 @@ def main():
     if error is not None or status == 'fail':
         exit_with_error(data, args, parameters, error, __file__)
 
-    # make sure locations are 0-based and integer!
-    # TODO: extract locations
-    locations = None
-
-    exit_success(data, args, parameters, locations, runtime, __file__)
+    exit_success(data, args, parameters, change_points, runtime, __file__)
 
 
 if __name__ == "__main__":
