@@ -1,7 +1,6 @@
 import abc
-import numbers
 
-from . import base
+from river import base
 
 
 class ChangePointDetector(base.Base):
