@@ -1,4 +1,4 @@
-# from river.changepoints.base import ChangePointDetector
+# from river.changepoints.methods import ChangePointDetector TODO: Change path for integration into river
 from .base import ChangePointDetector
 
 

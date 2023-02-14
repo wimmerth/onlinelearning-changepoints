@@ -1,5 +1,6 @@
 """
 A wrapper for a new change point detector implemented with river.
+This script can be copied and easily modified to run any change point detector on the tcpd benchmark.
 
 This file is a modified version of the template file given by:
     Author: G.J.J. van den Burg
