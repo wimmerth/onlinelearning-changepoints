@@ -4,8 +4,8 @@ from river import stream
 from river import base
 from .base import ChangePointDataset
 
-class Bitcoin(ChangePointDataset):
-    """Bitcoin Market Price
+class BrentSpotPrice(ChangePointDataset):
+    """Brent Spot Price
 
     This is the USD price for Brent Crude oil, measured daily. We include the time series 
 	from 2000 onwards. The data is sampled at every 10 original observations to reduce the length of the series.
