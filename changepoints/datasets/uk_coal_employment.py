@@ -18,7 +18,36 @@ class UKCoalEmploy(ChangePointDataset):
 
     def __init__(self):
         super().__init__(
-            annotations= ...,
+            annotations={
+		"6": [
+			15,
+			28,
+			45,
+			60,
+			68,
+			80
+		],
+		"7": [
+			18,
+			47,
+			81
+		],
+		"8": [],
+		"9": [
+			15,
+			27,
+			46,
+			68,
+			81
+		],
+		"13": [
+			19,
+			28,
+			45,
+			68,
+			80
+		]
+	},
             filename="uk_coal_employment.csv",
             task=base.REG,
             n_samples=105,
