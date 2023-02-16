@@ -90,8 +90,8 @@ def covering(annotations, predictions, n_obs):
 
 class Covering(ChangePointMetric):
 
-    def __init__(self, n_obs):
-        super().__init__()
+    def __init__(self, n_obs, margin=5):
+        super().__init__(margin=margin)
         self.n_obs = n_obs
 
     def __call__(self, annotations, predictions):

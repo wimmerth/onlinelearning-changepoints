@@ -1,4 +1,5 @@
 import abc
+import collections
 import operator
 
 from river import base
@@ -25,7 +26,7 @@ class ChangePointMetric:
     @property
     def bigger_is_better(self):
         """Indicate if a high value is better than a low one or not."""
-        return True
+        return False
 
     @staticmethod
     def works_with(model: base.Estimator) -> bool:
@@ -50,3 +51,29 @@ class ChangePointMetric:
 
     def __str__(self):
         return repr(self)
+
+    def __add__(self, other):
+        return ChangePointMetrics([self, other])
+
+
+class ChangePointMetrics(ChangePointMetric, collections.UserList):
+
+    def __init__(self, metrics, str_sep=", "):
+        super().__init__(metrics)
+        self.str_sep = str_sep
+
+    def __call__(self, annotations, predictions):
+        values = []
+        for metric in self:
+            values.append(metric(annotations, predictions))
+        self.value = values
+        return values
+
+    def bigger_is_better(self):
+        return all(metric.bigger_is_better for metric in self)
+
+    def is_better_than(self, other) -> bool:
+        raise NotImplementedError("Cannot compare multiple metrics.")
+
+    def __repr__(self):
+        return self.str_sep.join(str(m) for m in self)

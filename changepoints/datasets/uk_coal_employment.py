@@ -1,8 +1,9 @@
 from river import stream
 
 # from . import base
-from river import base
+from river.datasets import base
 from .base import ChangePointDataset
+
 
 class UKCoalEmploy(ChangePointDataset):
     """Historic Employment in UK Coal Mines
@@ -19,44 +20,45 @@ class UKCoalEmploy(ChangePointDataset):
     def __init__(self):
         super().__init__(
             annotations={
-		"6": [
-			15,
-			28,
-			45,
-			60,
-			68,
-			80
-		],
-		"7": [
-			18,
-			47,
-			81
-		],
-		"8": [],
-		"9": [
-			15,
-			27,
-			46,
-			68,
-			81
-		],
-		"13": [
-			19,
-			28,
-			45,
-			68,
-			80
-		]
-	},
+                "6": [
+                    15,
+                    28,
+                    45,
+                    60,
+                    68,
+                    80
+                ],
+                "7": [
+                    18,
+                    47,
+                    81
+                ],
+                "8": [],
+                "9": [
+                    15,
+                    27,
+                    46,
+                    68,
+                    81
+                ],
+                "13": [
+                    19,
+                    28,
+                    45,
+                    68,
+                    80
+                ]
+            },
             filename="uk_coal_employment.csv",
             task=base.REG,
             n_samples=105,
             n_features=1,
         )
+        self._path = "./datasets/uk_coal_employment.csv"
 
-    def _iter(self):
+    def __iter__(self):
         return stream.iter_csv(
-            self.path,
+            self._path,  # TODO: Must be changed for integration into river
             target="Employment",
             converters={
                 "Employment": int,

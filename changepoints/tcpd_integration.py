@@ -17,6 +17,7 @@ from multiprocessing import Process, Manager
 
 TIMEOUT = 60 * 30  # 30 minutes
 
+
 # ------------------------------------- YOUR NEW METHOD -------------------------------------
 # from xyz import AwesomeChangePointDetector # This class follows the abstract base class ChangePointDetector from river
 # METHOD = AwesomeChangePointDetector
@@ -59,7 +60,7 @@ def run_method(mat, parameters):
     change_points = []
     for t in range(mat.shape[0]):
         model.update(mat[t, :], t + 1)
-        if model.change_point_detected():
+        if model.change_point_detected:
             # make sure locations are 0-based and integer!
             change_points.append(t)
     return model, change_points

@@ -1,8 +1,9 @@
 from river import stream
 
 # from . import base
-from river import base
+from river.datasets import base
 from .base import ChangePointDataset
+
 
 class BrentSpotPrice(ChangePointDataset):
     """Brent Spot Price
@@ -25,57 +26,58 @@ class BrentSpotPrice(ChangePointDataset):
 
     def __init__(self):
         super().__init__(
-            annotations= {
-		"6": [
-			219,
-			230,
-			288
-		],
-		"8": [
-			227,
-			381
-		],
-		"9": [
-			86,
-			219,
-			230,
-			279,
-			375
-		],
-		"12": [
-			169,
-			172,
-			217,
-			228,
-			287,
-			368,
-			382,
-			389,
-			409
-		],
-		"13": [
-			170,
-			180,
-			219,
-			229,
-			246,
-			271,
-			286,
-			379,
-			409,
-			444,
-			483
-		]
-	},
+            annotations={
+                "6": [
+                    219,
+                    230,
+                    288
+                ],
+                "8": [
+                    227,
+                    381
+                ],
+                "9": [
+                    86,
+                    219,
+                    230,
+                    279,
+                    375
+                ],
+                "12": [
+                    169,
+                    172,
+                    217,
+                    228,
+                    287,
+                    368,
+                    382,
+                    389,
+                    409
+                ],
+                "13": [
+                    170,
+                    180,
+                    219,
+                    229,
+                    246,
+                    271,
+                    286,
+                    379,
+                    409,
+                    444,
+                    483
+                ]
+            },
             filename="brent_crude_oil.csv",
             task=base.REG,
             n_samples=8_195,
             n_features=1,
         )
+        self._path = "./datasets/brent_crude_oil.csv"
 
-    def _iter(self):
+    def __iter__(self):
         return stream.iter_csv(
-            self.path,
+            self._path,  # TODO: Must be changed for integration into river
             target="DPB",
             converters={
                 "DPB": float,

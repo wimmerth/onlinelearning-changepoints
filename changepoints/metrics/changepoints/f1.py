@@ -72,7 +72,7 @@ def f_measure(annotations, predictions, margin=5, alpha=0.5, return_PR=False):
 class F1(ChangePointMetric):
 
     def __init__(self, margin=5, alpha=0.5):
-        super().__init__(margin)
+        super().__init__(margin=margin)
         self.alpha = alpha
 
     def __call__(self, annotations, predictions):

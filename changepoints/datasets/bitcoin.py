@@ -1,8 +1,9 @@
 from river import stream
 
 # from . import base
-from river import base
+from river.datasets import base
 from .base import ChangePointDataset
+
 
 class Bitcoin(ChangePointDataset):
     """Bitcoin Market Price
@@ -20,46 +21,47 @@ class Bitcoin(ChangePointDataset):
     def __init__(self):
         super().__init__(
             annotations={
-		"6": [
-			502,
-			580,
-			702,
-			747
-		],
-		"8": [
-			583
-		],
-		"12": [
-			597
-		],
-		"13": [
-			522,
-			579,
-			591,
-			629,
-			703,
-			747,
-			760
-		],
-		"14": [
-			93,
-			522,
-			540,
-			701,
-			747,
-			760,
-			772
-		]
-	},
+                "6": [
+                    502,
+                    580,
+                    702,
+                    747
+                ],
+                "8": [
+                    583
+                ],
+                "12": [
+                    597
+                ],
+                "13": [
+                    522,
+                    579,
+                    591,
+                    629,
+                    703,
+                    747,
+                    760
+                ],
+                "14": [
+                    93,
+                    522,
+                    540,
+                    701,
+                    747,
+                    760,
+                    772
+                ]
+            },
             filename="bitcoin.csv",
             task=base.REG,
             n_samples=822,
             n_features=1,
         )
+        self._path = "./datasets/bitcoin.csv"
 
-    def _iter(self):
+    def __iter__(self):
         return stream.iter_csv(
-            self.path,
+            self._path,  # TODO: Must be changed for integration into river
             target="price",
             converters={
                 "price": float,

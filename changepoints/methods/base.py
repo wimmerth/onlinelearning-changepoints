@@ -24,7 +24,7 @@ class ChangePointDetector(base.Base):
         """
         Returns True if a change point was detected.
         """
-        return self.change_point_detected
+        return self._change_point_detected
 
     @property
     def change_point_score(self) -> float:
