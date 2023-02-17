@@ -8,9 +8,12 @@ from .base import ChangePointDataset
 class AirlinePassengers(ChangePointDataset):
     """JFK Airline Passengers
 
+    This dataset gives the number of passengers arriving and departing at JFK.
+    The data is obtained from New York State's official Kaggle page for this dataset.
+    
     References
     ----------
-    [^1]: 
+    [^1]: https://www.kaggle.com/new-york-state/nys-air-passenger-traffic,-port-authority-of-ny-nj#air-passenger-traffic-per-month-port-authority-of-ny-nj-beginning-1977.csv
     """
 
     def __init__(self):
