@@ -3,6 +3,9 @@ from methods.base import ChangePointDetector
 
 
 class NaiveCPD(ChangePointDetector):
+    """A change point detector that uses a linear regression over a specified lookback window to predict
+    the next value and then compares the prediction with the actual value. If the actual value is too
+    far from the prediction, a change point is detected."""
 
     def __init__(self, lookback_window, alpha=0.1, **kwargs):
         super().__init__(**kwargs)
@@ -37,3 +40,6 @@ class NaiveCPD(ChangePointDetector):
     def _reset(self):
         super()._reset()
         self.lookback_values = []
+
+    def is_multivariate(self):
+        return False
