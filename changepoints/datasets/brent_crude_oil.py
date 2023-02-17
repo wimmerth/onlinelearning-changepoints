@@ -82,5 +82,5 @@ class BrentSpotPrice(ChangePointDataset):
             converters={
                 "DPB": float,
             },
-            parse_dates={"day": "%d/%m/%Y"},
+            parse_dates={"day": "%m/%d/%Y"},
         )

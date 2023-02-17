@@ -13,7 +13,6 @@ def load_dataset(dataset: datasets.base.ChangePointDataset):
     :return: A tuple containing the data and the annotations.
     """
     annotations = dataset.annotations
-    print(annotations)
     return dataset, annotations
 
 
@@ -25,7 +24,7 @@ def run_method(method: ChangePointDetector, data: datasets.base.ChangePointDatas
     :return: A list of change points.
     """
     changepoints = []
-    for t, x in enumerate(data, start=1):
+    for t, (T, x) in enumerate(data, start=1):
         method.update(x, t)
         if method.change_point_detected:
             changepoints.append(t)
