@@ -44,7 +44,8 @@ class AirlinePassengers(ChangePointDataset):
     def __iter__(self):
         return stream.iter_csv(
             self._path,  # TODO: Must be changed for integration into river
-            target=["Domestic Passengers","International Passengers","Total Passengers"],
+            # target=["Domestic Passengers","International Passengers","Total Passengers"],
+            target="Total Passengers",
             converters={
                 "Airport Code": str,
                 "Domestic Passengers": int,"International Passengers": int,"Total Passengers": int,

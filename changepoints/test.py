@@ -6,7 +6,7 @@ from datasets.airline_passengers import AirlinePassengers
 
 if __name__ == "__main__":
     datasets = [UKCoalEmploy(), BrentSpotPrice(), Bitcoin()]
-    # datasets = [AirlinePassengers()]
+    datasets = [AirlinePassengers()]
     metrics = F1() + Covering()
     print(benchmark(ZeroPredictor(), datasets, metrics))
     print(benchmark(NaiveCPD(lookback_window=5, alpha=0.1), datasets, metrics))
