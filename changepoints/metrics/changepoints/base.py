@@ -16,7 +16,7 @@ class ChangePointMetric:
         self.value = None
 
     @abc.abstractmethod
-    def __call__(self, annotations, predictions):
+    def __call__(self, annotations, predictions, **kwargs):
         """Execute the metric"""
 
     def get(self) -> float:
@@ -56,16 +56,16 @@ class ChangePointMetric:
         return ChangePointMetrics([self, other])
 
 
-class ChangePointMetrics(ChangePointMetric, collections.UserList):
+class ChangePointMetrics(collections.UserList, ChangePointMetric):
 
     def __init__(self, metrics, str_sep=", "):
         super().__init__(metrics)
         self.str_sep = str_sep
 
-    def __call__(self, annotations, predictions):
+    def __call__(self, annotations, predictions, **kwargs):
         values = []
         for metric in self:
-            values.append(metric(annotations, predictions))
+            values.append(metric(annotations, predictions, **kwargs))
         self.value = values
         return values
 
