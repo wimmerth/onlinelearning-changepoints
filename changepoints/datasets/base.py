@@ -35,9 +35,3 @@ class ChangePointDataset(base.FileDataset, ABC):
         else:
             raise ValueError("Unknown annotator aggregation method.")
         return annotations
-
-################################################################
-# dataset name
-# annotations or annotations path
-# dataset path
-# in the __init__.py method we load the dataset and the annotations specific to our dataset

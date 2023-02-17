@@ -42,3 +42,9 @@ class ChangePointDetector(base.Base):
         :param t: Time step. STARTING FROM 1.
         :return: self
         """
+
+    @abc.abstractmethod
+    def is_multivariate(self):
+        """
+        Returns True if the change point detector can handle multivariate input sequences.
+        """

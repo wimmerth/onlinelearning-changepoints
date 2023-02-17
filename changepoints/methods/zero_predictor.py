@@ -3,6 +3,7 @@ from .base import ChangePointDetector
 
 
 class ZeroPredictor(ChangePointDetector):
+    """A change point detector that never predicts a change point except for the first sample."""
 
     def __init__(self):
         super().__init__()
@@ -14,3 +15,6 @@ class ZeroPredictor(ChangePointDetector):
         else:
             self._change_point_detected = False
         return self
+
+    def is_multivariate(self):
+        return True

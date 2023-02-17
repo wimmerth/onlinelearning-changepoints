@@ -90,10 +90,11 @@ def covering(annotations, predictions, n_obs):
 
 class Covering(ChangePointMetric):
 
-    def __init__(self, n_obs, margin=5):
+    def __init__(self, margin=5):
         super().__init__(margin=margin)
-        self.n_obs = n_obs
 
-    def __call__(self, annotations, predictions):
-        self.value = covering(annotations, predictions, self.n_obs)
+    def __call__(self, annotations, predictions, n_obs=None, **kwargs):
+        if n_obs is None:
+            raise ValueError("n_obs must be provided")
+        self.value = covering(annotations, predictions, n_obs)
         return self.get()
