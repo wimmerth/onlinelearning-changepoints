@@ -59,6 +59,9 @@ def benchmark(
         return results
 
     data, annotations = load_dataset(dataset)
+    if data.n_features > 1 and not method.is_multivariate():
+        print(f"Method {method} cannot handle multivariate input sequences. Skipping dataset.")
+        return None
     changepoints, n_obs = run_method(method, data)
     results = evaluate_method(annotations, changepoints, metric, n_obs=n_obs)
     return results
