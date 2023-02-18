@@ -6,57 +6,60 @@ from .base import ChangePointDataset
 
 
 class Occupancy(ChangePointDataset):
-    """ Interval Training Running Pace
+    """ Room occupancy data
+        Dataset on detecting room occupancy based on several variables. For our dataset we use the Temperature, Humidity, Light, and CO2 variables from the training dataset.
 
-        This dataset shows the pace of a runner during an interval training session, where a mobile application provides instructions on when to run and when to walk.
-        Data obtained from the authors' RunDouble account for a run on 2018-07-31.
+        This dataset is obtained from the UCI repository on 2019-06-10. As it is unclear whether the data can be redistributed as part of this repository, we download it locally instead.
+
+        The data is sampled at every 16 observations to reduce the length of the series.
+        ----------
+        Candanedo, Luis M., and Véronique Feldheim. "Accurate occupancy detection of an office room from light, temperature, humidity and CO2 measurements using statistical learning models." Energy and Buildings 112 (2016): 28-39.
     """
 
     def __init__(self):
         super().__init__(
             annotations={
                 "6": [
-                    60,
-                    96,
-                    114,
-                    174,
-                    204,
-                    240,
-                    258,
-                    317
-                ],
-                "7": [
-                    60,
-                    96,
-                    114,
-                    177,
-                    204,
-                    240,
-                    258,
-                    317
+                    238,
+                    416
                 ],
                 "8": [
-                    60,
-                    96,
-                    114,
-                    174,
-                    204,
-                    240,
-                    258,
-                    317
+                    53,
+                    143,
+                    238,
+                    417
+                ],
+                "9": [
+                    53,
+                    92,
+                    142,
+                    181,
+                    236,
+                    264,
+                    341,
+                    416,
+                    436,
+                    451,
+                    506
                 ],
                 "10": [
-                    2,
-                    60,
-                    96,
-                    114,
-                    174,
-                    204,
-                    240,
-                    258,
-                    317
+                    1,
+                    52,
+                    91,
+                    142,
+                    181,
+                    234,
+                    267,
+                    324,
+                    360,
+                    416,
+                    451,
+                    506
                 ],
-                "12": []
+                "12": [
+                    234,
+                    415
+                ]
             },
             filename="occupancy.csv",
             task=base.REG,
