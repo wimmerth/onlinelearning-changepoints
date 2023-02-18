@@ -3,18 +3,20 @@ import csv
 
 
 if __name__ == "__main__":
-    data = csv.reader(open("datasets/airline_passengers.csv", "r"))
+    FILE_NAME = "datasets/brent_crude_oil.csv"
+    DATE_FORMAT = "%m/%d/%Y"
+
+    data = csv.reader(open(FILE_NAME, "r"))
     # skip the header
-    next(data)
+    header = next(data)
 
-    print(sum([1 for row in data]))
+    print(f"Number of samples: {sum([1 for row in data])}")
 
-    # data = sorted(data, key=lambda x: datetime.datetime.strptime(x[0], "%m/%d/%Y").timestamp())
+    data = sorted(data, key=lambda x: datetime.datetime.strptime(x[0], DATE_FORMAT).timestamp())
 
-    # write the dates and the total number of passengers in a new file
-    # with open("datasets/brent_crude_oil.csv", "w") as f:
-    #     writer = csv.writer(f)
-    #     writer.writerow(["day", "DPB"])
-    #     for row in data:
-    #         writer.writerow(row)
+    with open(FILE_NAME, "w") as f:
+        writer = csv.writer(f)
+        writer.writerow(header)
+        for row in data:
+            writer.writerow(row)
 
