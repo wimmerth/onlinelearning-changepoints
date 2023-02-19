@@ -31,7 +31,7 @@ class NaiveCPD(ChangePointDetector):
                 self._change_point_detected = False
             else:
                 self._change_point_detected = True
-            self._change_point_score = abs(x - y_pred) / var_y
+            self._change_point_score = abs(x - y_pred) / var_y if var_y > 0 else 0
             self.lookback_values.pop(0)
 
         self.lookback_values.append(x)
