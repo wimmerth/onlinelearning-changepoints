@@ -35,3 +35,6 @@ class ChangePointDataset(base.FileDataset, ABC):
         else:
             raise ValueError("Unknown annotator aggregation method.")
         return annotations
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}"

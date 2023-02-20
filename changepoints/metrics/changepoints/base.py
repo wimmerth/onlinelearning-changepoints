@@ -46,8 +46,8 @@ class ChangePointMetric:
         return self.is_better_than(other)
 
     def __repr__(self):
-        """Return the class name along with the current value of the metric."""
-        return f"{self.__class__.__name__}: {self.get():{self._fmt}}".rstrip("0")
+        """Return the class name"""
+        return self.__class__.__name__
 
     def __str__(self):
         return repr(self)

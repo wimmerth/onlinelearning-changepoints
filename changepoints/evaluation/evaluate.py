@@ -5,6 +5,8 @@ import metrics.changepoints.base
 # import river.datasets.changepoints.base TODO: Change path for integration into river
 import datasets.base
 
+import csv
+
 
 def load_dataset(dataset: datasets.base.ChangePointDataset):
     """
@@ -51,17 +53,56 @@ def evaluate_method(changepoints: list,
 def benchmark(
         method,
         dataset,
-        metric):
+        metric,
+        to_csv=None,
+        include_csv_header=True):
     if not isinstance(dataset, datasets.base.ChangePointDataset):
         results = []
         for ds in dataset:
-            results.append(benchmark(method, ds, metric))
+            results.append(benchmark(method, ds, metric, to_csv=None))
+        if to_csv:
+            with open(to_csv, "a") as f:
+                writer = csv.writer(f)
+                if include_csv_header:
+                    writer.writerow(["Method", "Dataset", "Metric", "Result"])
+                for i, ds in enumerate(dataset):
+                    if isinstance(metric, metrics.changepoints.base.ChangePointMetrics):
+                        for j, m in enumerate(metric):
+                            if results[i] is not None:
+                                writer.writerow([method, ds, m, results[i][j]])
+                            else:
+                                writer.writerow([method, ds, m, ""])
+                    else:
+                        if results[i] is not None:
+                            writer.writerow([method, ds, metric, results[i]])
+                        else:
+                            writer.writerow([method, ds, metric, ""])
         return results
 
     data, annotations = load_dataset(dataset)
     if data.n_features > 1 and not method.is_multivariate():
         print(f"Method {method} cannot handle multivariate input sequences. Skipping dataset.")
+        if to_csv:
+            with open(to_csv, "a") as f:
+                writer = csv.writer(f)
+                if include_csv_header:
+                    writer.writerow(["Method", "Dataset", "Metric", "Result"])
+                if isinstance(metric, metrics.changepoints.base.ChangePointMetrics):
+                    for i, m in enumerate(metric):
+                        writer.writerow([method, dataset, m, ""])
+                else:
+                    writer.writerow([method, dataset, metric, ""])
         return None
     changepoints, n_obs = run_method(method, data)
     results = evaluate_method(annotations, changepoints, metric, n_obs=n_obs)
+    if to_csv:
+        with open(to_csv, "a") as f:
+            writer = csv.writer(f)
+            if include_csv_header:
+                writer.writerow(["Method", "Dataset", "Metric", "Result"])
+            if isinstance(metric, metrics.changepoints.base.ChangePointMetrics):
+                for i, m in enumerate(metric):
+                    writer.writerow([method, dataset, m, results[i]])
+            else:
+                writer.writerow([method, dataset, metric, results])
     return results
