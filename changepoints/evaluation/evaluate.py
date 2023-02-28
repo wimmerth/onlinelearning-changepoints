@@ -35,10 +35,11 @@ def run_method(method: ChangePointDetector, data: datasets.base.ChangePointDatas
     return changepoints, n_obs
 
 
-def evaluate_method(changepoints: list,
-                    annotations: list,
-                    metric: metrics.changepoints.base.ChangePointMetric,
-                    n_obs: int):
+def evaluate_method(
+        annotations: list,
+        changepoints: list,
+        metric: metrics.changepoints.base.ChangePointMetric,
+        n_obs: int):
     """
     Evaluate a method on a dataset.
     :param changepoints: A list of change points.
@@ -47,7 +48,7 @@ def evaluate_method(changepoints: list,
     :param n_obs: The number of observations in the dataset.
     :return: A dictionary containing the results.
     """
-    return metric(changepoints, annotations, n_obs=n_obs)
+    return metric(annotations, changepoints, n_obs=n_obs)
 
 
 def benchmark(
@@ -81,7 +82,8 @@ def benchmark(
 
     data, annotations = load_dataset(dataset)
     if data.n_features > 1 and not method.is_multivariate():
-        print(f"Method {method} cannot handle multivariate input sequences. Skipping dataset.")
+        print(
+            f"Method {method} cannot handle multivariate input sequences. Skipping dataset.")
         if to_csv:
             with open(to_csv, "a") as f:
                 writer = csv.writer(f)
@@ -94,6 +96,7 @@ def benchmark(
                     writer.writerow([method, dataset, metric, ""])
         return None
     changepoints, n_obs = run_method(method, data)
+    print("changepoints", changepoints)
     results = evaluate_method(annotations, changepoints, metric, n_obs=n_obs)
     if to_csv:
         with open(to_csv, "a") as f:

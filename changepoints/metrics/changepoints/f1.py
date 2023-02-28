@@ -76,5 +76,6 @@ class F1(ChangePointMetric):
         self.alpha = alpha
 
     def __call__(self, annotations, predictions, **kwargs):
-        self.value = f_measure(annotations, predictions, margin=self.margin, alpha=self.alpha)
+        self.value = f_measure(annotations, predictions,
+                               margin=self.margin, alpha=self.alpha)
         return self.get()
