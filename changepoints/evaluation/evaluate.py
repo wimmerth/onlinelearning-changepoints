@@ -60,6 +60,7 @@ def benchmark(
         results = []
         for ds in dataset:
             results.append(benchmark(method, ds, metric, to_csv=None))
+            method._reset()
         if to_csv:
             with open(to_csv, "a") as f:
                 writer = csv.writer(f)
