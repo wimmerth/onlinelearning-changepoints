@@ -5,12 +5,25 @@ from river.datasets import base
 
 
 class ChangePointDataset(base.FileDataset, ABC):
+    """Base class for change point datasets that are stored in a local file.
+
+    Datasets that are part of the Alan Turing Institute Change Point Detection project.
+
+    Parameters
+    ----------
+    annotations
+        The file's associated annotations.
+    desc
+        Extra dataset parameters to pass as keyword arguments.
+
+    """
     def __init__(self, annotations, **desc):
         super().__init__(**desc)
         self._annotations = annotations
 
     @property
     def annotations(self):
+        """Returns the annotations of the dataset"""
         return self._annotations
 
     def annotations_aggregated(self, annotator_aggregation):

@@ -5,7 +5,7 @@ from river import base
 
 class ChangePointDetector(base.Base):
     """
-    An abstract class for change point detection methods. Use this class to be able to run test using the tcpd benchmark.
+    An abstract class for change point detection methods. Use this class to be able to run test using the TCPD benchmark.
     """
 
     def __init__(self, **kwargs):
@@ -35,12 +35,19 @@ class ChangePointDetector(base.Base):
 
     @abc.abstractmethod
     def update(self, x, t) -> "ChangePointDetector":
-        """
-        Update the change point detector with a single data point.
+        """Update the change point detector with a single data point.
 
-        :param x: Input data point.
-        :param t: Time step. STARTING FROM 1.
-        :return: self
+        Parameters
+        ----------
+        x
+            Input data point.
+        t
+            Time step. STARTING FROM 1.
+
+        Returns
+        -------
+        self
+        
         """
 
     @abc.abstractmethod
