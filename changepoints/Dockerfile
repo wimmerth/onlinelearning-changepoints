@@ -2,8 +2,7 @@ FROM ubuntu:22.04
 RUN apt update && apt upgrade -y
 RUN apt-get install -y python3 python3-pip
 RUN apt install -y wget
-# RUN apt-get install -y software-properties-common
-# RUN apt install -y cmake python3-dev python3-pip build-essential libzmq3-dev
+
 RUN python3 -m  pip install numpy pandas river matplotlib
 # Any working directory can be chosen as per choice like '/' or '/home' etc
 # i have chosen /usr/app/src
