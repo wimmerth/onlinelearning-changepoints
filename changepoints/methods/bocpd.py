@@ -6,7 +6,7 @@ from numpy.linalg import inv
 from functools import partial
 
 
-class MultivariateT():
+class MultivariateT:
     def __init__(
         self,
         dims: int = 1,
@@ -20,12 +20,13 @@ class MultivariateT():
         This implies a multivariate Gaussian distribution on the data, a Wishart prior on the precision,
         and a Gaussian prior on the mean.
         Implementation based on Haines, T.S., Gaussian Conjugate Prior Cheat Sheet.
-        Parameters:
-        dof - The degrees of freedom on the prior distribution of the precision (inverse covariance)
-        kappa - The number of observations we've already seen
-        mu - The mean of the prior distribution on the mean
-        scale - The mean of the prior distribution on the precision
-        dims - The number of variables
+
+        Args:
+            dof: The degrees of freedom on the prior distribution of the precision (inverse covariance).
+            kappa: The number of observations we've already seen.
+            mu: The mean of the prior distribution on the mean.
+            scale: The mean of the prior distribution on the precision.
+            dims: The number of variables.
         """
         # We default to the minimum possible degrees of freedom, which is 1 greater than the dimensionality
         if dof == 0:
@@ -55,15 +56,21 @@ class MultivariateT():
 
     def pdf(self, data: np.array):
         """
-        Returns the probability of the observed data under the current and historical parameters
-        Parmeters:
-            data - the datapoints to be evaualted (shape: 1 x D vector)
+        Returns the probability of the observed data under the current and historical parameters.
+
+        Args:
+            data: The datapoints to be evaluated (shape: 1 x D vector).
+
+        Raises:
+            Exception: If scipy version is less than 1.6.0.
         """
+
         self.t += 1
         t_dof = self.dof - self.dims + 1
         expanded = np.expand_dims(
             (self.kappa * t_dof) / (self.kappa + 1), (1, 2))
         ret = np.empty(self.t)
+
         try:
             # This can't be vectorised due to https://github.com/scipy/scipy/issues/13450
             for i, (df, loc, shape) in islice(
@@ -76,14 +83,17 @@ class MultivariateT():
             raise Exception(
                 "You need scipy 1.6.0 or greater to use the multivariate t distribution"
             )
+        
         return ret
 
     def update_theta(self, data: np.array, **kwargs):
         """
-        Performs a bayesian update on the prior parameters, given data
-        Parmeters:
-            data - the datapoints to be evaluated (shape: 1 x D vector)
+        Performs a Bayesian update on the prior parameters, given data.
+
+        Args:
+            data: The datapoints to be evaluated (shape: 1 x D vector).
         """
+
         centered = data - self.mu
 
         # We simultaneously update each parameter in the vector, because following figure 1c of the BOCD paper, each
@@ -115,14 +125,17 @@ class StudentT():
         self, alpha: float = 0.1, beta: float = 0.1, kappa: float = 1, mu: float = 0
     ):
         """
-        StudentT distribution except normal distribution is replaced with the student T distribution
+        StudentT distribution except normal distribution is replaced with the student T distribution.
         https://en.wikipedia.org/wiki/Normal-gamma_distribution
 
-        Parameters:
-            alpha - alpha in gamma distribution prior
-            beta - beta inn gamma distribution prior
-            mu - mean from normal distribution
-            kappa - variance from normal distribution
+        Args:
+            alpha: Alpha in gamma distribution prior.
+            beta: Beta in gamma distribution prior.
+            mu: Mean from normal distribution.
+            kappa: Variance from normal distribution.
+        
+        Raises:
+            ValueError: If any of the parameters are invalid.
         """
 
         self.alpha0 = self.alpha = np.array([alpha])
@@ -132,10 +145,10 @@ class StudentT():
 
     def pdf(self, data: np.array):
         """
-        Return the pdf function of the t distribution
+        Return the pdf function of the t distribution.
 
-        Parmeters:
-            data - the datapoints to be evaluated (shape: 1 x D vector)
+        Args:
+            data: The datapoints to be evaluated (shape: 1 x D vector).
         """
         return ss.t.pdf(
             x=data,
@@ -147,9 +160,10 @@ class StudentT():
 
     def update_theta(self, data: np.array, **kwargs):
         """
-        Performs a bayesian update on the prior parameters, given data
-        Parmeters:
-            data - the datapoints to be evaluated (shape: 1 x D vector)
+        Performs a Bayesian update on the prior parameters, given data.
+
+        Args:
+            data: The datapoints to be evaluated (shape: 1 x D vector).
         """
         muT0 = np.concatenate(
             (self.mu0, (self.kappa * self.mu + data) / (self.kappa + 1))
@@ -172,8 +186,40 @@ class StudentT():
 
 
 class BOCPD(ChangePointDetector):
+    """
+    Bayesian Online Change Point Detection (BOCPD) algorithm.
+
+    This algorithm detects change points in data using a Bayesian framework.
+
+    Args:
+        threshold: The threshold value for detecting change points.
+        **kwargs: Additional keyword arguments to be passed to the base class.
+
+    Attributes:
+        hazard_function: The hazard function used for evaluating the growth probabilities.
+        log_likelihood_class: The class representing the log-likelihood function.
+        maxes: Array to store the indices with the maximum probabilities.
+        R: Matrix for storing the run length probabilities.
+        threshold: The threshold value for detecting change points.
+
+    Methods:
+        update: Update the BOCPD model with new data.
+        constant_hazard: Compute the hazard function for Bayesian online learning.
+        _reset: Reset the state of the BOCPD model.
+        is_multivariate: Check if the model is multivariate.
+
+    Inherits:
+        ChangePointDetector
+    """
 
     def __init__(self, threshold, **kwargs):
+        """
+        Initialize the BOCPD model.
+
+        Args:
+            threshold: The threshold value for detecting change points.
+            **kwargs: Additional keyword arguments to be passed to the base class.
+        """
         super().__init__(**kwargs)
         self.hazard_function = partial(self.constant_hazard, 20)
         self.log_likelihood_class = StudentT(0.1, .01, 1, 0)
@@ -185,6 +231,16 @@ class BOCPD(ChangePointDetector):
         self.threshold = threshold
 
     def update(self, x, t) -> "ChangePointDetector":
+        """
+        Update the BOCPD model with new data.
+
+        Args:
+            x: The data point to be evaluated.
+            t: The time index of the data point.
+
+        Returns:
+            ChangePointDetector: The updated ChangePointDetector object.
+        """
         # Shift time to start at 0
         t = t-1 
         self._change_point_detected = False
@@ -220,17 +276,31 @@ class BOCPD(ChangePointDetector):
 
     def constant_hazard(self, lam, r):
         """
-        Hazard function for bayesian online learning
-        Arguments:
-            lam - inital prob
-            r - R matrix
+        Compute the hazard function for Bayesian online learning.
+
+        Args:
+            lam: The initial probability.
+            r: The R matrix.
+
+        Returns:
+            ndarray: The hazard function values.
         """
+
         return 1 / lam * np.ones(r.shape)
 
     def _reset(self):
+        """
+        Reset the state of the BOCPD model.
+        """
         super()._reset()
         self.maxes = []
         self.R = []
 
     def is_multivariate(self):
+        """
+        Check if the BOCPD model is multivariate.
+
+        Returns:
+            bool: True if the model is multivariate, False otherwise.
+        """
         return False

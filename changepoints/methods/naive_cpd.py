@@ -3,18 +3,49 @@ from methods.base import ChangePointDetector
 
 
 class NaiveCPD(ChangePointDetector):
-    """A change point detector that uses a linear regression over a specified lookback window to predict
+    """
+    A change point detector that uses a linear regression over a specified lookback window to predict
     the next value and then compares the prediction with the actual value. If the actual value is too
-    far from the prediction, a change point is detected."""
+    far from the prediction, a change point is detected.
+
+    Args:
+        lookback_window: Size of the lookback window for linear regression.
+        alpha: Threshold parameter for determining change points.
+
+    Methods:
+        update(x, t): Update the change point detector with a new data point.
+        _reset(): Reset the change point detector to its initial state.
+        is_multivariate(): Check if the change point detector is designed for multivariate data.
+
+    """
 
     def __init__(self, lookback_window, alpha=0.1, **kwargs):
+        """
+        Initialize the NaiveCPD.
+
+        Args:
+            lookback_window: Size of the lookback window for linear regression.
+            alpha: Threshold parameter for determining change points.
+            **kwargs: Additional keyword arguments.
+
+        """
         super().__init__(**kwargs)
         self.lookback_window = lookback_window
         self.alpha = alpha
         self.lookback_values = []
 
     def update(self, x, t) -> "ChangePointDetector":
+        """
+        Update the change point detector with a new data point.
 
+        Args:
+            x: The new data point.
+            t: The time step or index of the new data point.
+
+        Returns:
+            ChangePointDetector: The updated change point detector.
+
+        """
         if t > self.lookback_window:
             # Linear regression without using numpy
             mean_x = sum(range(1, len(self.lookback_values) + 1)) / len(self.lookback_values)
@@ -38,8 +69,17 @@ class NaiveCPD(ChangePointDetector):
         return self
 
     def _reset(self):
+        """
+        Reset the change point detector to its initial state.
+        """
         super()._reset()
         self.lookback_values = []
 
     def is_multivariate(self):
+        """
+        Check if the change point detector is designed for multivariate data.
+
+        Returns:
+            bool: True if the change point detector is designed for multivariate data, False otherwise.
+        """
         return False

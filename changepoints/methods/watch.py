@@ -3,8 +3,38 @@ from scipy.stats import wasserstein_distance
 
 
 class WATCH(ChangePointDetector):
+    """
+    WATCH (Wasserstein Change Point Detection for High-Dimensional Time Series Data) is a change point detector
+    that uses the Wasserstein distance to detect changes in the underlying distribution of a high-dimensional
+    time series data stream. It maintains a distribution of samples and compares the Wasserstein distance between
+    new batches of samples and the distribution.
 
+    Args:
+        batch_size: Size of each batch of samples.
+        min_distr_size: Minimum size of the distribution before change point detection starts.
+        max_distr_size: Maximum size of the distribution. When the size exceeds this value, old samples are removed.
+        epsilon: Scaling factor for the maximum Wasserstein distance used for change point detection.
+        **kwargs: Additional keyword arguments.
+
+    Methods:
+        compute_eta(): Compute the scaling factor for the maximum Wasserstein distance.
+        update(x, t): Update the change point detector with a new data point.
+        _reset(): Reset the change point detector to its initial state.
+        is_multivariate(): Check if the change point detector is designed for multivariate data.
+
+    """
     def __init__(self, batch_size, min_distr_size, max_distr_size, epsilon, **kwargs):
+        """
+        Initialize the WATCH change point detector.
+
+        Args:
+            batch_size: Size of each batch of samples.
+            min_distr_size: Minimum size of the distribution before change point detection starts.
+            max_distr_size: Maximum size of the distribution. When the size exceeds this value, old samples are removed.
+            epsilon: Scaling factor for the maximum Wasserstein distance used for change point detection.
+            **kwargs: Additional keyword arguments.
+
+        """
         super().__init__(**kwargs)
         self.distr = []
         self.current_batch = []
@@ -16,6 +46,10 @@ class WATCH(ChangePointDetector):
         self.epsilon = epsilon
 
     def compute_eta(self):
+        """
+        Compute the scaling factor for the maximum Wasserstein distance.
+
+        """
         batches_in_distr = len(self.distr)//self.batch_size
         max_wasserstein_distance = 0
         for i in range(batches_in_distr):
@@ -27,6 +61,17 @@ class WATCH(ChangePointDetector):
         self.eta = self.epsilon * max_wasserstein_distance
 
     def update(self, x, t) -> "ChangePointDetector":
+        """
+        Update the change point detector with a new data point.
+
+        Args:
+            x: The new data point.
+            t: The time step or index of the new data point.
+
+        Returns:
+            ChangePointDetector: The updated change point detector.
+
+        """
         self._change_point_detected = False
         # Adding samples to the batch
         self.current_batch.append(x)
@@ -63,10 +108,21 @@ class WATCH(ChangePointDetector):
         return self
 
     def _reset(self):
+        """
+        Reset the change point detector to its initial state.
+
+        """
         super()._reset()
         # self.R = []
         self.distr = []
         self.current_batch = []
 
     def is_multivariate(self):
+        """
+        Check if the change point detector is designed for multivariate data.
+
+        Returns:
+            bool: True if the change point detector is designed for multivariate data, False otherwise.
+
+        """
         return False
