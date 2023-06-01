@@ -1,24 +1,10 @@
-# from river.changepoints.methods.base import ChangePointDetector
 from methods.base import ChangePointDetector
 
-from collections import deque
 from numbers import Number
-from typing import Any, Dict, List, Tuple, Type, Union
-
-import networkx as nx
-import numpy as np
-from typing_extensions import Literal
-
-
-# import stats
+from typing import Dict, List, Tuple, Type, Union
 from abc import ABC, abstractmethod
-from collections import Counter, defaultdict
+from collections import Counter, defaultdict, deque
 from math import sqrt
-from typing import Dict
-
-from abc import ABC, abstractmethod
-from typing import Dict, List, Tuple, Union
-
 import numpy as np
 
 
@@ -70,6 +56,7 @@ class StandardScaler(Scaler):
         _means: defaultdict object to store the means of each feature.
         _variances: defaultdict object to store the variances of each feature.
     """
+
     def __init__(self):
         """
         Initialize the StandardScaler object.
@@ -112,7 +99,8 @@ class StandardScaler(Scaler):
             self._variances[k] += (((v-prev_mean) *
                                    (v-self._means[k])) / self._counts[k])
         return {k: StandardScaler.non_zero_div(v-self._means[k], sqrt(self._variances[k])) for k, v in x.items()}
-    
+
+
 class ECDAS(ChangePointDetector):
     """
     ECDAS (Exponentially Cumulative Distribution-based Algorithm for Stream) is a multivariate change point
@@ -139,9 +127,11 @@ class ECDAS(ChangePointDetector):
     """
 
     def __init__(self,
-                 num_features: Union[str, List[Union[str, Tuple[str, float]]]]=["feature1"],
-                 cat_features: Union[str, List[Union[str, Tuple[str, float]]]]=[],
-                 window_size: int=30,
+                 num_features: Union[str, List[Union[str, Tuple[str, float]]]] = [
+                     "feature1"],
+                 cat_features: Union[str,
+                                     List[Union[str, Tuple[str, float]]]] = [],
+                 window_size: int = 30,
                  num_scaler: Type[Scaler] = None,
                  cat_scaler: Type[Scaler] = None,
                  custom_start: int = None,
@@ -162,16 +152,14 @@ class ECDAS(ChangePointDetector):
         """
         super().__init__(**kwargs)
         self.features = {0: (None,  # categorical window
-                                NumericalWindow(num_features, window_size,
-                                                None if not num_scaler else num_scaler()))}
+                             NumericalWindow(num_features, window_size,
+                                             None if not num_scaler else num_scaler()))}
         self._window_size = window_size
         self._num_scaler = num_scaler
         self._custom_start = custom_start if custom_start else window_size
         self.num_feature_count = len(num_features) if isinstance(
             num_features, list) else 1
         self.initialized = False
-        # self.cat_feature_count = len(cat_features) if isinstance(
-        #     cat_features, list) else 1
 
         # threshold detector
         self.detector = ThresholdChangeDetector(
@@ -189,14 +177,13 @@ class ECDAS(ChangePointDetector):
             self: Updated instance of the change point detector.
         """
         self._change_point_detected = False
-        # print(f"data: {x}, type: {type(x)}")
         if not isinstance(x, dict):
             x = {"feature1": x}
         if not self.initialized:
             num_features = list(x.keys())
             self.features = {0: (None,  # categorical window
-                                NumericalWindow(num_features, self._window_size,
-                                                None if not self._num_scaler else self._num_scaler()))}
+                                 NumericalWindow(num_features, self._window_size,
+                                                 None if not self._num_scaler else self._num_scaler()))}
             self.initialized = True
         node_id = False
         f = self.features[node_id if node_id else 0]
@@ -206,15 +193,11 @@ class ECDAS(ChangePointDetector):
         triggered = False
         num_avg, num_features, num_scores = num_window.learn_one(
             x, should_score)
-        # same thing for categorical features
-        # ...
         avg = num_avg  # + cat_features
         if should_score:
-            # print("num scores", num_scores)
             triggered = self.detector.step(avg)
             self._change_point_detected = triggered
-        # return triggered, avg, (0, None, None), (num_avg, num_features, num_scores)
-        
+
         return self
 
     def _reset(self):
@@ -232,8 +215,8 @@ class ECDAS(ChangePointDetector):
             bool: True if multivariate, False otherwise.
         """
         return True
-    
-    
+
+
 class ThresholdChangeDetector:
     """
     ThresholdChangeDetector is a helper class used by ECDAS to detect change points based on a mean threshold.
@@ -246,6 +229,7 @@ class ThresholdChangeDetector:
     Methods:
         step(x): Perform a step of change point detection.
     """
+
     def __init__(self, mean_threshold: float, window_size: int = 10, min_samples: int = 100):
         """
         Initialize the ThresholdChangeDetector.
@@ -304,6 +288,7 @@ class Window(ABC):
         _reference_average(): Compute the average of the reference window.
         _update(x): Update the window with a new data point.
     """
+
     def __init__(self, features: Union[str, List[Union[str, Tuple[str, float]]]], size: int,  scaler: Scaler, p: float = .6):
         """
         Initialize the Window.
@@ -386,6 +371,7 @@ class NumericalWindow(Window):
     Inherits from:
         Window
     """
+
     def __init__(self, features: Union[str, List[Union[str, Tuple[str, float]]]], size: int, scaler: Scaler = None):
         """
         Initialize the NumericalWindow.
@@ -451,7 +437,8 @@ class NumericalWindow(Window):
         out[:] = loss
         idx = np.argsort(out)[::-1]
         return np.mean(out, axis=0), self._features[idx], out[idx]
-    
+
+
 class Utils():
     """
     Utils is a utility class that provides common helper functions.
@@ -460,11 +447,13 @@ class Utils():
         rmse(y, x, expand=True): Compute the root mean squared error between two arrays.
 
     """
+
     def __init__(self) -> None:
         """
         Initialize the Utils class.
         """
         pass
+
     def rmse(y: np.ndarray, x: np.ndarray, expand: bool = True):
         """
         Compute the root mean squared error between two arrays.
