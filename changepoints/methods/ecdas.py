@@ -65,22 +65,22 @@ class StandardScaler(Scaler):
         self._means = defaultdict(float)
         self._variances = defaultdict(float)
 
-    @abstractmethod
-    def non_zero_div(x, y):
-        """
-        Perform division with handling for zero division.
+    # @abstractmethod
+    # def non_zero_div(x, y):
+    #     """
+    #     Perform division with handling for zero division.
 
-        Args:
-            x: Numerator.
-            y: Denominator.
+    #     Args:
+    #         x: Numerator.
+    #         y: Denominator.
 
-        Returns:
-            float: Result of the division.
-        """
-        try:
-            return x/(y)
-        except ZeroDivisionError:
-            return 0
+    #     Returns:
+    #         float: Result of the division.
+    #     """
+    #     try:
+    #         return x/(y)
+    #     except ZeroDivisionError:
+    #         return 0
 
     def scale(self, x: Dict[str, float]):
         """
@@ -98,7 +98,14 @@ class StandardScaler(Scaler):
             self._means[k] += (v-prev_mean)/self._counts[k]
             self._variances[k] += (((v-prev_mean) *
                                    (v-self._means[k])) / self._counts[k])
-        return {k: StandardScaler.non_zero_div(v-self._means[k], sqrt(self._variances[k])) for k, v in x.items()}
+        dic = {}
+        for k, v in x.items():
+            if self._variances[k] == 0:
+                dic[k] = 0
+            else:
+                dic[k] = (v-self._means[k])/ sqrt(self._variances[k])
+        return dic
+        # return {k: StandardScaler.non_zero_div(v-self._means[k], sqrt(self._variances[k])) for k, v in x.items()}
 
 
 class ECDAS(ChangePointDetector):
