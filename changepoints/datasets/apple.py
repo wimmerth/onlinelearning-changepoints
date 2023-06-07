@@ -52,5 +52,5 @@ class Apple(ChangePointDataset):
                 "Adj Close": float,
                 "Volume": float,
             },
-            parse_dates={"time": "%Y-%m-%d %H:%M:%S"},
+            parse_dates={"Date": "%Y-%m-%d"},
         )
