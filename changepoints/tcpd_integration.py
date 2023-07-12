@@ -12,7 +12,7 @@ This file is a modified version of the template file given by:
 import argparse
 import time
 
-from cpdbench_utils import load_dataset, exit_success, exit_with_error, make_param_dict, exit_with_timeout
+from tcpdbench_utils import load_dataset, exit_success, exit_with_error, make_param_dict, exit_with_timeout
 from multiprocessing import Process, Manager
 
 TIMEOUT = 60 * 30  # 30 minutes
